@@ -29,7 +29,7 @@ chown -R rundeck:rundeck /opt/rundeck
 sed -i \
   "s#rundeck-@VER@.war#rundeck-${RUNDECK_VERSION}.war#" \
   /opt/local/lib/svc/method/rundeck
-svccfg import /opt/local/lib/svc/manifest/mailtrain.xml
+svccfg import /opt/local/lib/svc/manifest/rundeck.xml
 
 # Clean up
 echo "* Cleaning up."
