@@ -33,9 +33,6 @@ svccfg import /opt/local/lib/svc/manifest/rundeck.xml
 
 # Clean up
 echo "* Cleaning up."
-rm -rf /opt/qutic/var/tmp
-pkgin -y remove gmake
-pkgin -y remove gcc7
 rm /root/customize
 
 # Prepare image for provisioning
