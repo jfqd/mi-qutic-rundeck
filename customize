@@ -1,0 +1,42 @@
+#!/usr/bin/bash
+
+PATH=/opt/local/gnu/bin:/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin
+
+# Exit if any command fails
+set -o errexit
+
+RUNDECK_VERSION="3.0.22-20190512"
+
+MUNIN_PLUGINS="
+"
+
+echo "* Activate munin plugins"
+/opt/qutic/bin/munin-node-plugins ${MUNIN_PLUGINS}
+
+echo "* Setup rundeck env"
+groupadd -g 1100 rundeck
+useradd -m -s /usr/bin/bash -d /opt/rundeck -u 1100 -g rundeck rundeck
+passwd -N rundeck
+passwd -d rundeck
+
+cd /opt/rundeck
+curl -LO https://download.qutic.com/src/rundeck-${RUNDECK_VERSION}.war
+
+mkdir -p /opt/rundeck/.ssh
+chown -R rundeck:rundeck /opt/rundeck
+
+# smf support
+sed -i \
+  "s#rundeck-@VER@.war#rundeck-${RUNDECK_VERSION}.war#" \
+  /opt/local/lib/svc/method/rundeck
+svccfg import /opt/local/lib/svc/manifest/mailtrain.xml
+
+# Clean up
+echo "* Cleaning up."
+rm -rf /opt/qutic/var/tmp
+pkgin -y remove gmake
+pkgin -y remove gcc7
+rm /root/customize
+
+# Prepare image for provisioning
+sm-prepare-image -y
