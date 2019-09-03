@@ -23,7 +23,21 @@ cd /opt/rundeck
 curl -LO https://download.qutic.com/src/rundeck-${RUNDECK_VERSION}.war
 
 mkdir -p /opt/rundeck/.ssh
+mkdir -p /opt/rundeck/.snmp
+
+cat >> /opt/rundeck/.snmp/snmp.conf << EOF
+defVersion        3
+defSecurityName   snmp-v3-readwrite
+defSecurityLevel  authNoPriv
+defAuthPassphrase securepwd
+printValueOnly    yes
+quickPrinting     yes
+EOF
+
 chown -R rundeck:rundeck /opt/rundeck
+chmod 0750 /opt/rundeck/.ssh
+chmod 0750 /opt/rundeck/.snmp
+chmod 0640 /opt/rundeck/.snmp/snmp.conf
 
 # smf support
 sed -i \
