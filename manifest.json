@@ -1,6 +1,6 @@
 {
   "name":         "qutic-rundeck",
-  "version":      "20181018.0",
+  "version":      "20181018.1",
   "description":  "qutic rundeck image",
   "organization": "qutic development",
   "brand":        "Rundeck Instance",

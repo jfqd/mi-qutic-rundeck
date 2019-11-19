@@ -1,5 +1,10 @@
 # Changelog
 
+## 20181018.1
+
+* Add project_name and resources_xml params
+* Add a hint on tokens duration
+
 ## 20181018.0
 
 * First release

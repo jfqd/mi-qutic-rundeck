@@ -1,7 +1,7 @@
 name="qutic-rundeck"
 organization="qutic development"
 brand="rundeck Instance"
-version="20181018.0"
+version="20181018.1
 description="qutic rundeck image"
 homepage="https://github.com/jfqd/mi-qutic-rundeck"
 users="root rundeck"
