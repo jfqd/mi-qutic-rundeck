@@ -34,6 +34,9 @@ printValueOnly    yes
 quickPrinting     yes
 EOF
 
+mkdir -p /opt/rundeck/server/config
+echo "rundeck.api.tokens.duration.max=0" >> /opt/rundeck/server/config/rundeck-config.properties
+
 chown -R rundeck:rundeck /opt/rundeck
 chmod 0750 /opt/rundeck/.ssh
 chmod 0750 /opt/rundeck/.snmp
