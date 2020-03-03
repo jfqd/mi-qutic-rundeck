@@ -7,12 +7,6 @@ set -o errexit
 
 RUNDECK_VERSION="3.0.22-20190512"
 
-MUNIN_PLUGINS="
-"
-
-echo "* Activate munin plugins"
-/opt/qutic/bin/munin-node-plugins ${MUNIN_PLUGINS}
-
 echo "* Setup rundeck env"
 groupadd -g 1100 rundeck
 useradd -m -s /usr/bin/bash -d /opt/rundeck -u 1100 -g rundeck rundeck
