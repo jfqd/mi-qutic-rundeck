@@ -1,0 +1,44 @@
+#!/opt/local/bin/ruby
+require 'sekrets'
+
+key         = ARGV[0]
+validation  = ARGV[1]
+name        = ARGV[2]
+description = ARGV[3]
+alt_names   = ARGV[4]
+
+(puts "key mising"        ; exit 1) if key == nil || key == ''
+(puts "validation mising" ; exit 1) if validation == nil || validation == ''
+(puts "name mising"       ; exit 1) if name == nil || name == ''
+(puts "key description"   ; exit 1) if description == nil || description == ''
+
+# TMPDIR=/var/tmp sekrets edit settings.yml.enc --key my-secret-key
+settings = Sekrets.settings_for('/opt/rundeck/settings.yml.enc', key)
+
+account_uuid    = settings['account_uuid']
+validation_uuid = (validation == "http" ? settings['http_validation_uuid'] : settings['dns_validation_uuid'])
+host            = settings['host']
+api_key         = settings['api_key']
+api_secret      = settings['api_secret']
+
+# skip on wrong keys
+(puts "account mising" ; exit 1) if account_uuid == nil || account_uuid == ''
+
+result = %x|/opt/local/bin/curl -s -XPOST \
+  -H "Content-Type: application/json" \
+  -u "#{api_key}:#{api_secret}" \
+  https://#{host}/api/acmeclient/certificates/add -d '{
+  "certificate": {
+    "enabled": "1",
+    "name": "#{name}",
+    "altNames": "#{alt_names}",
+    "description": "#{description}",
+    "account": "#{account_uuid}",
+    "validationMethod": "#{validation_uuid}",
+    "keyLength": "key_4096",
+    "autoRenewal": "1",
+    "renewInterval": "60"
+  }
+}'|
+
+puts result

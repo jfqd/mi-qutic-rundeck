@@ -1,0 +1,50 @@
+#!/opt/local/bin/ruby
+require 'sekrets'
+require 'resolv'
+
+key       = ARGV[0]
+domain    = ARGV[1]
+subdomain = ARGV[2]
+ip        = ARGV[3]
+
+(puts "key mising";       exit 1) if key == nil || key == ''
+(puts "domain mising";    exit 1) if domain == nil || domain == ''
+(puts "subdomain mising"; exit 1) if subdomain == nil || subdomain == ''
+(puts "ip missing";       exit 1) if ip == nil || ip == ''
+
+# TMPDIR=/var/tmp sekrets edit settings.yml.enc --key my-secret-key
+settings = Sekrets.settings_for('/opt/rundeck/settings.yml.enc', key)
+
+powerdns_host    = settings['powerdns_host']
+powerdns_api_key = settings['powerdns_api_key']
+
+# test if ipv4 address or cname content
+# TODO: test for Resolv::IPv6::Regex
+type = ( "#{ip}" =~ Resolv::IPv4::Regex ? "A" : "CNAME" )
+
+# skip on wrong keys
+(puts "powerdns_host mising" ; exit 1) if powerdns_host == nil || powerdns_host == ''
+
+result = %x%/opt/local/bin/curl -i -s -XPATCH \
+  -H 'X-API-Key: #{powerdns_api_key}' \
+  https://#{powerdns_host}/api/v1/servers/localhost/zones/#{domain} -d '{
+  "rrsets": [
+    {
+      "name": "#{subdomain}.#{domain}.",
+      "type": "#{type}",
+      "changetype": "REPLACE",
+      "ttl": 600,
+      "records": [
+        {
+          "content": "#{ip}",
+          "disabled": false,
+          "name": "#{subdomain}.#{domain}",
+          "type": "?#{type}",
+          "ttl": 600
+        }
+      ]
+    }
+  ]
+}' | /opt/local/bin/grep 'HTTP'%
+
+puts result

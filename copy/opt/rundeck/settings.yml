@@ -1,0 +1,9 @@
+host:                 'opnsense.example.com'
+api_key:              'opnsense-api-key'
+api_secret:           'opnsense-api-secret'
+account_uuid:         'account-id'
+http_validation_uuid: 'http-validation-uuid'
+dns_validation_uuid:  'dns-validation-uuid'
+powerdns_host:        'pdns.example.com'
+powerdns_port:        8081
+powerdns_api_key:     'pdns-api-key'
