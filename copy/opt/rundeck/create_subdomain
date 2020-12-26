@@ -19,11 +19,10 @@ powerdns_host    = settings['powerdns_host']
 powerdns_api_key = settings['powerdns_api_key']
 
 # test if ipv4 address or cname content
-# TODO: test for Resolv::IPv6::Regex
 type = ( "#{ip}" =~ Resolv::IPv4::Regex ? "A" : "CNAME" )
 
 # skip on wrong keys
-(puts "powerdns_host mising" ; exit 1) if powerdns_host == nil || powerdns_host == ''
+(puts "powerdns_host missing" ; exit 1) if powerdns_host == nil || powerdns_host == ''
 
 result = %x%/opt/local/bin/curl -i -s -XPATCH \
   -H 'X-API-Key: #{powerdns_api_key}' \
@@ -36,10 +35,10 @@ result = %x%/opt/local/bin/curl -i -s -XPATCH \
       "ttl": 600,
       "records": [
         {
-          "content": "#{ip}",
+          "content": "#{ip}#{type=="CNAME" ? "." : ""}",
           "disabled": false,
           "name": "#{subdomain}.#{domain}",
-          "type": "?#{type}",
+          "type": "#{type}",
           "ttl": 600
         }
       ]
