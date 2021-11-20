@@ -3,8 +3,8 @@ require 'sekrets'
 
 key         = ARGV[0]
 validation  = ARGV[1]
-name        = ARGV[2]
-description = ARGV[3]
+name        = ARGV[2].strip
+description = ARGV[3].strip
 alt_names   = ARGV[4]
 
 (puts "key mising"        ; exit 1) if key == nil || key == ''
