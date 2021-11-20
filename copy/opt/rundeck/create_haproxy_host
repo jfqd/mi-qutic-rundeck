@@ -1,0 +1,112 @@
+#!/opt/local/bin/ruby
+require 'sekrets'
+require 'json'
+
+key    = ARGV[0]
+zalias = ARGV[1].strip
+ip     = ARGV[2]
+domain = ARGV[3].strip
+
+(puts "key mising"    ; exit 1) if key == nil || key == ''
+(puts "alias missing" ; exit 1) if zalias == nil || zalias == ''
+(puts "ip mising"     ; exit 1) if ip == nil || ip == ''
+(puts "domain mising"   ; exit 1) if domain == nil || domain == ''
+
+# TMPDIR=/var/tmp sekrets edit settings.yml.enc --key my-secret-key
+settings = Sekrets.settings_for('/opt/rundeck/settings.yml.enc', key)
+
+host            = settings['host']
+api_key         = settings['api_key']
+api_secret      = settings['api_secret']
+
+####################
+# Create Server
+puts "Create Server:"
+result = %x|/opt/local/bin/curl -s -XPOST \
+  -H "Content-Type: application/json" \
+  -u "#{api_key}:#{api_secret}" \
+  https://#{host}/api/haproxy/settings/addServer -d '{
+  "server": {
+    "enabled": "1",
+    "name": "#{zalias}-Server",
+    "description": "#{zalias}-Server",
+    "type": "static",
+    "address": "#{ip}",
+    "port": "443",
+    "ssl": "1",
+    "sslVerify": "0"
+  }
+}'|
+puts result
+
+j = JSON.parse result
+exit 1 if j["result"] != "saved"
+
+server_uuid = j["uuid"]
+
+####################
+# Create Backend
+puts "Create Backend:"
+result = %x|/opt/local/bin/curl -s -XPOST \
+  -H "Content-Type: application/json" \
+  -u "#{api_key}:#{api_secret}" \
+  https://#{host}/api/haproxy/settings/addBackend -d '{
+  "backend": {
+    "enabled": "1",
+    "name": "#{zalias}-Backend",
+    "description": "#{zalias}-Backend",
+    "mode": "http",
+    "algorithm": "source",
+    "linkedServers": "#{server_uuid}",
+    "persistence": "sticktable"
+  }
+}'|
+puts result
+
+j = JSON.parse result
+exit 1 if j["result"] != "saved"
+
+backend_uuid = j["uuid"]
+
+####################
+# Create ACL
+puts "Create ACL:"
+result = %x|/opt/local/bin/curl -s -XPOST \
+  -H "Content-Type: application/json" \
+  -u "#{api_key}:#{api_secret}" \
+  https://#{host}/api/haproxy/settings/addAcl -d '{
+  "acl": {
+    "name": "#{zalias}-acl",
+    "description": "#{zalias}-acl",
+    "expression": "hdr_sub",
+    "hdr_sub": "#{domain}"
+  }
+}'|
+puts result
+
+j = JSON.parse result
+exit 1 if j["result"] != "saved"
+
+acl_uuid = j["uuid"]
+
+####################
+# Create Action
+puts "Create Action:"
+result = %x|/opt/local/bin/curl -s -XPOST \
+  -H "Content-Type: application/json" \
+  -u "#{api_key}:#{api_secret}" \
+  https://#{host}/api/haproxy/settings/addAction -d '{
+  "action": {
+    "name": "#{zalias}-action",
+    "description": "#{zalias}-action",
+    "linkedAcls": "#{acl_uuid}",
+    "type": "use_backend",
+    "use_backend": "#{backend_uuid}"
+  }
+}'|
+puts result
+
+j = JSON.parse result
+exit 1 if j["result"] != "saved"
+
+action_uuid = j["uuid"]

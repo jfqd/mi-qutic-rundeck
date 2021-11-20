@@ -1,0 +1,141 @@
+#!/opt/local/bin/ruby
+require 'sekrets'
+require 'json'
+
+key    = ARGV[0]
+zalias = ARGV[1]
+
+(puts "key mising"    ; exit 1) if key == nil || key == ''
+(puts "alias missing" ; exit 1) if zalias == nil || zalias == ''
+
+# TMPDIR=/var/tmp sekrets edit settings.yml.enc --key my-secret-key
+settings = Sekrets.settings_for('/opt/rundeck/settings.yml.enc', key)
+
+host            = settings['host']
+api_key         = settings['api_key']
+api_secret      = settings['api_secret']
+
+####################
+# Delete Action
+puts "Delete Action:"
+result = %x|/opt/local/bin/curl -s -XGET \
+  -u "#{api_key}:#{api_secret}" \
+  https://#{host}/api/haproxy/settings/searchActions|
+
+j = JSON.parse result
+
+action_uuid = nil
+j["rows"].each do |row|
+  if row["name"].include? zalias
+    action_uuid = row["uuid"]
+    break
+  end
+end
+
+if action_uuid != nil
+  puts "found uuid: #{action_uuid}"
+
+  result = %x|/opt/local/bin/curl -s -XPOST \
+    -H "Content-Type: application/json" \
+    -u "#{api_key}:#{api_secret}" \
+    -d '{ "uuid": "#{action_uuid}" }' \
+    https://#{host}/api/haproxy/settings/delAction/#{action_uuid}|
+
+  puts result
+else
+  puts "!! no action found for: #{zalias}"
+end
+
+####################
+# Delete ACL
+puts "Delete ACL:"
+result = %x|/opt/local/bin/curl -s -XGET \
+  -u "#{api_key}:#{api_secret}" \
+  https://#{host}/api/haproxy/settings/searchAcls|
+
+j = JSON.parse result
+
+acl_uuid = nil
+j["rows"].each do |row|
+  if row["name"].include? zalias
+    acl_uuid = row["uuid"]
+    break
+  end
+end
+
+if acl_uuid != nil
+  puts "found uuid: #{acl_uuid}"
+
+  result = %x|/opt/local/bin/curl -s -XPOST \
+    -H "Content-Type: application/json" \
+    -u "#{api_key}:#{api_secret}" \
+    -d '{ "uuid": "#{acl_uuid}" }' \
+    https://#{host}/api/haproxy/settings/delAcl/#{acl_uuid}|
+
+  puts result
+
+else
+  puts "!! no acl found for: #{zalias}"
+end
+
+####################
+# Delete Backend
+puts "Delete Backend:"
+result = %x|/opt/local/bin/curl -s -XGET \
+  -u "#{api_key}:#{api_secret}" \
+  https://#{host}/api/haproxy/settings/searchBackends|
+
+j = JSON.parse result
+
+backend_uuid = nil
+j["rows"].each do |row|
+  if row["name"].include? zalias
+    backend_uuid = row["uuid"]
+    break
+  end
+end
+
+if backend_uuid != nil
+  puts "found uuid: #{backend_uuid}"
+
+  result = %x|/opt/local/bin/curl -s -XPOST \
+    -H "Content-Type: application/json" \
+    -u "#{api_key}:#{api_secret}" \
+    -d '{ "uuid": "#{backend_uuid}" }' \
+    https://#{host}/api/haproxy/settings/delBackend/#{backend_uuid}|
+
+  puts result
+else
+  puts "!! no backend found for: #{zalias}"
+end
+
+####################
+# Delete Server
+puts "Delete Server:"
+result = %x|/opt/local/bin/curl -s -XGET \
+  -u "#{api_key}:#{api_secret}" \
+  https://#{host}/api/haproxy/settings/searchServers|
+
+j = JSON.parse result
+
+server_uuid = nil
+j["rows"].each do |row|
+  if row["name"].include? zalias
+    server_uuid = row["uuid"]
+    break
+  end
+end
+
+if server_uuid != nil
+  puts "found uuid: #{server_uuid}"
+
+  result = %x|/opt/local/bin/curl -s -XPOST \
+    -H "Content-Type: application/json" \
+    -u "#{api_key}:#{api_secret}" \
+    -d '{ "uuid": "#{server_uuid}" }' \
+    https://#{host}/api/haproxy/settings/delServer/#{server_uuid}|
+
+  puts result
+else
+  puts "!! no server found for: #{zalias}"
+end

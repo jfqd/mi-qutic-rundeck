@@ -61,9 +61,9 @@
 # 3.  incorporate critical port lists
 #
 # - - - - - - - - SET THESE VARIABLES - - - - - - - - - - - - 
-BASEDIR=/etc/nagios/scancheck  #where to keep everything
+BASEDIR=/opt/rundeck/scancheck  #where to keep everything
                                #must be nagios user writable
-NMAPPATH=/usr/local/bin        #where is nmap
+NMAPPATH=/opt/local/bin        #where is nmap
 #------------------------------------------------------------
 
 #note... to run manually, you have to supply a dummy
