@@ -6,6 +6,7 @@ PATH=/opt/local/gnu/bin:/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin
 set -o errexit
 
 RUNDECK_VERSION="3.4.10-20220118"
+MYSQLJ_VERS="8.0.27"
 
 echo "* Setup rundeck env"
 groupadd -g 1100 rundeck
@@ -28,13 +29,21 @@ printValueOnly    yes
 quickPrinting     yes
 EOF
 
-mkdir -p /opt/rundeck/server/config
-echo "rundeck.api.tokens.duration.max=0" >> /opt/rundeck/server/config/rundeck-config.properties
+cat >> /opt/rundeck/.ssh/environment << EOF
+PATH=/opt/local/sbin:/opt/local/bin:/usr/sbin:/usr/bin:/sbin
+EOF
 
 chown -R rundeck:rundeck /opt/rundeck
-chmod 0750 /opt/rundeck/.ssh
+chmod 0700 /opt/rundeck/.ssh
 chmod 0750 /opt/rundeck/.snmp
 chmod 0640 /opt/rundeck/.snmp/snmp.conf
+
+# https://repo1.maven.org/maven2/mysql/mysql-connector-java/${MYSQLJ_VERS}/mysql-connector-java-${MYSQLJ_VERS}.jar
+curl -LO https://download.qutic.com/src/rundeck/mysql-connector-java-${MYSQLJ_VERS}.jar
+chown rundeck:rundeck mysql-connector-java-${MYSQLJ_VERS}.jar
+
+# create log-smlink for later usage
+ln -nfs /opt/rundeck/server/logs /var/log/rundeck
 
 # smf support
 sed -i \
