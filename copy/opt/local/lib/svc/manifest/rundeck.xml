@@ -2,7 +2,7 @@
 <!DOCTYPE service_bundle SYSTEM '/usr/share/lib/xml/dtd/service_bundle.dtd.1'>
 <service_bundle type='manifest' name='export'>
   <service name='network/rundeck' type='service' version='0'>
-    <instance name='rundeck' enabled='true'>
+    <instance name='rundeck' enabled='false'>
       <dependency name='fs-local' grouping='require_all' restart_on='none' type='service'>
         <service_fmri value='svc:/system/filesystem/local'/>
       </dependency>
