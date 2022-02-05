@@ -5,7 +5,7 @@ PATH=/opt/local/gnu/bin:/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin
 # Exit if any command fails
 set -o errexit
 
-RUNDECK_VERSION="3.4.6-20211110"
+RUNDECK_VERSION="3.4.10-20220118"
 
 echo "* Setup rundeck env"
 groupadd -g 1100 rundeck
