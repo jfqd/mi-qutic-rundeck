@@ -27,7 +27,14 @@ dataSource.url = jdbc:mysql://${MYSQL_HOST}/${MYSQL_DB}?autoReconnect=true&useSS
 dataSource.username = ${MYSQL_USER}
 dataSource.password = ${MYSQL_PWD}
 EOF
-chmod 0640 /opt/rundeck/server/config/rundeck-config.properties
-chown rundeck:rundeck /opt/rundeck/server/config/rundeck-config.properties
+  chmod 0640 /opt/rundeck/server/config/rundeck-config.properties
+  chown rundeck:rundeck /opt/rundeck/server/config/rundeck-config.properties
 
+fi
+
+if mdata-get snmp_auth 1>/dev/null 2>&1; then
+  SNMP_AUTH=$(mdata-get snmp_auth)
+  sed -i \
+      -e "s/securepwd/${SNMP_AUTH}/" \
+       /opt/rundeck/.snmp/snmp.conf
 fi
