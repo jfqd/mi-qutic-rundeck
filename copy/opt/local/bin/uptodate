@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+# upgrade system
+/opt/local/bin/pkgin -y ug
+/opt/local/bin/pkgin clean
+# fix common issues
+/usr/sbin/svcadm restart nullmailer
+#/usr/sbin/svcadm restart svc:/network/rundeck:rundeck
+/usr/bin/cp /opt/local/lib/munin/plugins/ps_.bak /opt/local/lib/munin/plugins/ps_
+/usr/bin/svcs -vx
