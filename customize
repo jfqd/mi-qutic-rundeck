@@ -38,10 +38,6 @@ chmod 0700 /opt/rundeck/.ssh
 chmod 0750 /opt/rundeck/.snmp
 chmod 0640 /opt/rundeck/.snmp/snmp.conf
 
-# https://repo1.maven.org/maven2/mysql/mysql-connector-java/${MYSQLJ_VERS}/mysql-connector-java-${MYSQLJ_VERS}.jar
-curl -LO https://download.qutic.com/src/rundeck/mysql-connector-java-${MYSQLJ_VERS}.jar
-chown rundeck:rundeck mysql-connector-java-${MYSQLJ_VERS}.jar
-
 # create log-smlink for later usage
 ln -nfs /opt/rundeck/server/logs /var/log/rundeck
 

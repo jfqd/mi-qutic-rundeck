@@ -20,12 +20,11 @@ if mdata-get mysql_host 1>/dev/null 2>&1; then
        /opt/rundeck/rundeck-config.properties
   
   # https://docs.rundeck.digitalstacks.net/l/en/database/using-my-sql-as-a-database-backend
-  # https://simoncor.net/blog/rundeck_331_mysql/
   cat >> /opt/rundeck/rundeck-config.properties << EOF
 
 # mysql settings
 dataSource.dbCreate = update
-dataSource.driverClassName = com.mysql.cj.jdbc.Driver
+dataSource.driverClassName = org.mariadb.jdbc.Driver
 dataSource.url = jdbc:mysql://${MYSQL_HOST}/${MYSQL_DB}?autoReconnect=true&useSSL=false
 dataSource.username = ${MYSQL_USER}
 dataSource.password = ${MYSQL_PWD}
