@@ -14,7 +14,7 @@ passwd -N rundeck
 passwd -d rundeck
 
 cd /opt/rundeck
-curl -LO https://download.qutic.com/src/rundeck-${RUNDECK_VERSION}.war
+curl -LO https://download.qutic.com/src/rundeck/rundeck-${RUNDECK_VERSION}.war
 
 mkdir -p /opt/rundeck/.ssh
 mkdir -p /opt/rundeck/.snmp
