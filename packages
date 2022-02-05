@@ -2,3 +2,4 @@ openjdk11
 jdbc-mysql
 nginx
 net-snmp
+htop
