@@ -1,5 +1,13 @@
 # Changelog
 
+## 20201019.1
+
+* update Rundeck to v3.4.10
+* add uptodate script
+* upgrade nginx tls protocols
+* remove beaver config
+* use latest base image
+
 ## 20201019.0
 
 * update Rundeck to v3.4.6

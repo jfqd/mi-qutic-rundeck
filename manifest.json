@@ -1,11 +1,11 @@
 {
   "name":         "qutic-rundeck",
-  "version":      "20201019.0",
+  "version":      "20201019.1",
   "description":  "qutic rundeck image",
   "organization": "qutic development",
   "brand":        "Rundeck Instance",
   "homepage":     "https://github.com/jfqd/mi-qutic-rundeck",
-  "base":         "dc7582fe-e199-11eb-ad98-375a4b13af54",
+  "base":         "29ef13e8-5ff2-11ec-ab76-d70ca091426f",
   "customer_metadata": {
     "admin_authorized_keys":   {"type": "text", "description": "SSH public authorized key(s) for the admin user"},
     "rundeck_authorized_keys": {"type": "text", "description": "SSH public authorized key(s) for the rundeck user"},
@@ -29,5 +29,6 @@
     "mysql_host":              {"type": "text", "description": "mysql host"},
     "mysql_database":          {"type": "text", "description": "mysql database"},
     "mysql_user":              {"type": "text", "description": "mysql user"},
-    "mysql_passwd":            {"type": "text", "description": "mysql password"}
+    "mysql_passwd":            {"type": "text", "description": "mysql password"},
+    "snmp_auth":               {"type": "text", "description": "snmp password"}
 }
