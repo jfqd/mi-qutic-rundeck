@@ -3,3 +3,4 @@ jdbc-mysql
 nginx
 net-snmp
 htop
+jq
