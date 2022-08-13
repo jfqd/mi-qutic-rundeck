@@ -31,7 +31,7 @@ fi
 case "$1" in
 start)
     cd /opt/rundeck
-    /opt/local/bin/java -Xmx1024m -Xms1024m -jar -server -Drundeck.jetty.connector.forwarded=true ./rundeck-@VER@.war &
+    /opt/local/bin/java -Xmx2048m -Xms2048m -jar -server -Drundeck.jetty.connector.forwarded=true ./rundeck-@VER@.war &
     ;;
 *)
     print "Usage: $0 {start}"
