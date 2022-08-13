@@ -33,6 +33,29 @@ EOF
   chown rundeck:rundeck /opt/rundeck/rundeck-config.properties
 fi
 
+if mdata-get mail_smarthost 1>/dev/null 2>&1; then
+  MAIL_HOST=$(mdata-get mail_smarthost)
+  MAIL_FROM=$(mdata-get mail_adminaddr)
+  MAIL_USER=$(mdata-get mail_auth_user)
+  MAIL_PWD=$(mdata-get mail_auth_user)
+
+  # https://docs.rundeck.digitalstacks.net/l/en/configuration/email-settings
+  cat >> /opt/rundeck/rundeck-config.properties << EOF
+
+# mail config
+grails.mail.default.from=${MAIL_FROM}
+grails.mail.host=${MAIL_HOST}
+grails.mail.port=587
+grails.mail.username=${MAIL_USER}
+grails.mail.password=${MAIL_PWD}
+grails.mail.props.mail.smtp.starttls.enable=true
+grails.mail.props.mail.smtp.port=587
+grails.mail.props.mail.smtp.auth=true
+EOF
+  chmod 0640 /opt/rundeck/rundeck-config.properties
+  chown rundeck:rundeck /opt/rundeck/rundeck-config.properties
+fi
+
 if mdata-get snmp_auth 1>/dev/null 2>&1; then
   SNMP_AUTH=$(mdata-get snmp_auth)
   sed -i \
