@@ -1,0 +1,40 @@
+#!/opt/local/bin/ruby
+require 'sekrets'
+require 'json'
+
+key  = ARGV[0]
+name = ARGV[1]
+
+(puts "key mising"        ; exit 1) if key == nil || key == ''
+(puts "name mising"       ; exit 1) if name == nil || name.strip == ''
+
+# TMPDIR=/var/tmp sekrets edit settings.yml.enc --key my-secret-key
+settings = Sekrets.settings_for('/opt/rundeck/settings.yml.enc', key)
+
+account_uuid    = settings['account_uuid']
+host            = settings['host']
+api_key         = settings['api_key']
+api_secret      = settings['api_secret']
+
+# skip on wrong keys
+(puts "account mising" ; exit 1) if account_uuid == nil || account_uuid == ''
+
+begin
+  result = %x[set -o pipefail ; /opt/local/bin/curl -s -XGET \
+    -u "#{api_key}:#{api_secret}" \
+    https://#{host}/api/acmeclient/certificates/search]
+
+  h = []; j = JSON.parse(result)
+  j["rows"].each do |r|
+    h << [r["name"], r["uuid"]] if r["name"] == name.strip && r["enabled"] == "1"
+  end
+
+  if h.size > 0
+    puts h[0][1]
+    exit 0
+  else
+    exit 1
+  end
+rescue
+  exit 1
+end 
