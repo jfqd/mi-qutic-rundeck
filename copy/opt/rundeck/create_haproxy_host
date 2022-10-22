@@ -6,11 +6,13 @@ key    = ARGV[0]
 zalias = ARGV[1].strip
 ip     = ARGV[2]
 domain = ARGV[3].strip
+port   = ARGV[4].strip
 
-(puts "key mising"    ; exit 1) if key == nil || key == ''
-(puts "alias missing" ; exit 1) if zalias == nil || zalias == ''
-(puts "ip mising"     ; exit 1) if ip == nil || ip == ''
+(puts "key mising"    ; exit 1)   if key == nil || key == ''
+(puts "alias missing" ; exit 1)   if zalias == nil || zalias == ''
+(puts "ip mising"     ; exit 1)   if ip == nil || ip == ''
 (puts "domain mising"   ; exit 1) if domain == nil || domain == ''
+port = 443                        if port == nil || port == ''
 
 # TMPDIR=/var/tmp sekrets edit settings.yml.enc --key my-secret-key
 settings = Sekrets.settings_for('/opt/rundeck/settings.yml.enc', key)
@@ -32,7 +34,7 @@ result = %x|/opt/local/bin/curl -s -XPOST \
     "description": "#{zalias}-Server",
     "type": "static",
     "address": "#{ip}",
-    "port": "443",
+    "port": "#{port}",
     "ssl": "1",
     "sslVerify": "0"
   }
