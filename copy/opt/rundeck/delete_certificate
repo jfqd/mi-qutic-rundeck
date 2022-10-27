@@ -1,0 +1,28 @@
+#!/opt/local/bin/ruby
+require 'sekrets'
+require 'json'
+
+key  = ARGV[0]
+uuid = ARGV[1]
+
+(puts "key mising"        ; exit 1) if key == nil || key == ''
+(puts "uuid mising"       ; exit 1) if uuid == nil || uuid.strip == ''
+
+# TMPDIR=/var/tmp sekrets edit settings.yml.enc --key my-secret-key
+settings = Sekrets.settings_for('/opt/rundeck/settings.yml.enc', key)
+
+account_uuid    = settings['account_uuid']
+host            = settings['host']
+api_key         = settings['api_key']
+api_secret      = settings['api_secret']
+
+# skip on wrong keys
+(puts "account mising" ; exit 1) if account_uuid == nil || account_uuid == ''
+
+result = %x[/opt/local/bin/curl -s -XPOST \
+  -H "Content-Type: application/json" \
+  -u "#{api_key}:#{api_secret}" \
+  -d '{ "uuid": "#{uuid}" }' \
+  https://#{host}/api/acmeclient/certificates/del/#{uuid}]
+
+puts result
